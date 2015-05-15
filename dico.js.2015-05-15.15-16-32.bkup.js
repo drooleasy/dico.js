@@ -49,8 +49,7 @@
 			parseText(node, dictionary, options);
 		}else if(node.nodeType == 1 && 
 				options.is_parsable_callback(node, options, function(){
-					return default_is_parsable_callback(node, options);
-					
+					return default_is_parsable_callback(node, options);	
 				})){ // elements node, look recursively for text nodes in children
 			var children = node.childNodes;
 			for (var i=0; i<children.length ; i++){

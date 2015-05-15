@@ -1,5 +1,5 @@
 	var defaults  =  {
-	
+		
 		match_class : "dico-match",
 		match_prefix : "",
 		match_suffix : "*",

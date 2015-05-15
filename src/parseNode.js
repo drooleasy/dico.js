@@ -1,5 +1,5 @@
 	function parseNode(node, dictionary, options, onReady){
-		console.log(node);
+		"use strict";
 		
 		options = options || {};
 		onReady = onReady || function(){};
@@ -9,8 +9,6 @@
 		for(opt in parseNode.config){
 			if(options[opt] === undefined){
 				options[opt] = parseNode.config[opt];
-				//console.log("opt  " + opt);
-				//console.log(opt);
 			}
 		}
 		onReady.pendingOps = onReady.pendingOps || 0;
@@ -19,7 +17,6 @@
 			parseText(node, dictionary, options);
 		}else if(node.nodeType == 1 && 
 				options.is_parsable_callback(node, options, function(){
-					//console.log("supa called");
 					return default_is_parsable_callback(node, options);
 					
 				})){ // elements node, look recursively for text nodes in children
@@ -36,7 +33,6 @@
 		}
 		onReady.pendingOps--;
 		if(onReady.pendingOps===0){ 
-			//console.log("ready");
 			onReady();
 		}
 		// other types of nodes (comments...) : skip 'em
@@ -58,7 +54,6 @@
 	
 				original = cur && cur[origin];
 				if(original){
-					// console.log(original);
 					text_node = document.createTextNode(original);
 					// asynchronus to avoid concurrent iteration and modification of node list
 					// also ensures it wont be executed before parsing (asynchronously) ended

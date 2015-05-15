@@ -3,7 +3,7 @@
 
 
 		var defaults  =  {
-		
+	
 		match_class : "dico-match",
 		match_prefix : "",
 		match_suffix : "*",
@@ -31,7 +31,7 @@
 	};
 	
 		function parseNode(node, dictionary, options, onReady){
-		"use strict";
+		console.log(node);
 		
 		options = options || {};
 		onReady = onReady || function(){};
@@ -41,6 +41,8 @@
 		for(opt in parseNode.config){
 			if(options[opt] === undefined){
 				options[opt] = parseNode.config[opt];
+				//console.log("opt  " + opt);
+				//console.log(opt);
 			}
 		}
 		onReady.pendingOps = onReady.pendingOps || 0;
@@ -49,6 +51,7 @@
 			parseText(node, dictionary, options);
 		}else if(node.nodeType == 1 && 
 				options.is_parsable_callback(node, options, function(){
+					//console.log("supa called");
 					return default_is_parsable_callback(node, options);
 					
 				})){ // elements node, look recursively for text nodes in children
@@ -65,6 +68,7 @@
 		}
 		onReady.pendingOps--;
 		if(onReady.pendingOps===0){ 
+			//console.log("ready");
 			onReady();
 		}
 		// other types of nodes (comments...) : skip 'em
@@ -86,6 +90,7 @@
 	
 				original = cur && cur[origin];
 				if(original){
+					// console.log(original);
 					text_node = document.createTextNode(original);
 					// asynchronus to avoid concurrent iteration and modification of node list
 					// also ensures it wont be executed before parsing (asynchronously) ended
@@ -100,7 +105,6 @@
 	}
 		// encapsulates match in an element with a class name and optionaly the title
 	function default_matches_callback(match, dict_key, dict_def, options){
-		"use strict";
 		var elt = document.createElement(options.match_element);
 		elt.className = options.match_class;
 		if(options.match_set_title) elt.title = dict_def;
@@ -110,21 +114,19 @@
 		
 	// exclude some sensibly irrelevent elements and allready treated ones
 	function default_is_parsable_callback(element_node, options, original_callback){
-		"use strict";
+		
 		var pre = "data-" + options.name +"-"+ options.match_data +"-";
 		var origin = pre + options.match_data_original;
 		return !element_node[origin] && !element_node.nodeName.match(/^(STYLE|SCRIPT|HEAD|TITLE|META|LINK)$/i)
 	}
 	
 		function swap(old, neo){
-		"use strict";
 		return function(){
 			old.parentNode && old.parentNode.replaceChild(neo,old);
 		};
 	}
 		// node is a text element
 	function parseText(node, dictionary, options){
-		"use strict";
 		var text = node.nodeValue || "";
 		dictionary = dictionary || [];
 						
@@ -217,6 +219,7 @@
 		
 		// iterate matches in order of the text, so we can correctly injects remaining parts
 		if(matchesArr.length>0){
+			//console.log(matchesObj);
 			matchesArr.sort(function(a,b){return a-b;})
 			var previousPosition = 0;
 			for(var i = 0; i< matchesArr.length; i++){

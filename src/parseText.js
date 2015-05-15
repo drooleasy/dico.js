@@ -1,5 +1,6 @@
 	// node is a text element
 	function parseText(node, dictionary, options){
+		"use strict";
 		var text = node.nodeValue || "";
 		dictionary = dictionary || [];
 						
@@ -92,7 +93,6 @@
 		
 		// iterate matches in order of the text, so we can correctly injects remaining parts
 		if(matchesArr.length>0){
-			//console.log(matchesObj);
 			matchesArr.sort(function(a,b){return a-b;})
 			var previousPosition = 0;
 			for(var i = 0; i< matchesArr.length; i++){
