@@ -1,9 +1,4 @@
 dico.config.is_parsable_callback = function(element, options, supa){
-	/*console.log("my configured is_parsable - supa");
-	console.log(supa());
-	console.log("my configured is_parsable - nodeName");
-	console.log(element.nodeName);
-	console.log(!element.nodeName.match(/^(CODE|PRE)$/i));*/
 	return supa() && !element.nodeName.match(/^(CODE|PRE)$/i);
 }
 
@@ -16,29 +11,25 @@ function demo(){
 		[/[Rr]eg[eE]xp/g, "I'am a regexp match and I'am decorated by JavaScript"],
 		
 	];
-
-
-
-
 	dico(document.body, dict_base)
+
+
+
 
 
 	var dict_dsbl = [
 		['dictionaries', 'A dictionary is an array of arrays of pairs key/definition.'],
 		['dictionary', 'A dictionary is an array of arrays of pairs key/definition.'],
 	];
-
 	var dsbl = null;
 	var dsbl_opt = {
 		match_class:"dsbl-match", // dico-match
 		match_element:"code", // span
 		match_suffix:"", // *
-		match_data_token : "dsbl-token",
-		match_data_original : "dsbl-original",
-		match_data_definition : "dsbl-definition",
-
+		name : "dsbl",
 	};
 	var dsbl_rgx = /\bdisabled\b/, dsbl_cname = "disabled"
+	// volontary set a global
 	enable_dict = function enable_dict(){
 		var enable_btn = document.getElementById('enable-dict');
 		var disable_btn = document.getElementById('disable-dict');
@@ -49,6 +40,7 @@ function demo(){
 		}
 		return false;
 	};
+	// volontary set a global
 	disable_dict = function disable_dict(){
 		var enable_btn = document.getElementById('enable-dict');
 		var disable_btn = document.getElementById('disable-dict');
@@ -61,13 +53,16 @@ function demo(){
 	};
 
 
+
+
+
+
 	var dict_bigwin = [
 		["match","'match' wins over 'at'"],
 		["at","'at' would have loose in 'match'"],
 		["tip","'tip' would have loose in 'multiple'"],
 		["multiple","'multiple' wins over 'tip'"],
 	];
-
 	dico(document.body, dict_bigwin, {
 		match_class:"bigwin-match", 
 		match_prefix:"[",
@@ -78,20 +73,6 @@ function demo(){
 
 
 
-	var opt_custom = {
-		match_class:"mymatch", // dico-match
-		match_element:"strong", // span
-		match_prefix:"::", // ""
-		match_suffix:"::", // *
-		match_case_sensitively:true, // false
-		match_set_title:true, // true
-		smatch_character_regexp : /\w/,
-		match_only_first : false,
-		match_data_token : "custom-token",
-		match_data_original : "custom-original",
-		match_data_definition : "custom-definition",
-	};
-
 	var dict_custom = [
 		["customize","you can customize pretty much everything"],
 		["name","you can customize pretty much everything"],
@@ -101,7 +82,17 @@ function demo(){
 		["title","you can customize pretty much everything"],
 		
 	];
-
+	var opt_custom = {
+		match_class:"mymatch", // dico-match
+		match_element:"strong", // span
+		match_prefix:"::", // ""
+		match_suffix:"::", // *
+		match_case_sensitively:true, // false
+		match_set_title:true, // true
+		smatch_character_regexp : /\w/,
+		match_only_first : false,
+		name : "custom",
+	};
 	dico(document.getElementById("custom"), dict_custom, opt_custom);
 
 
@@ -149,11 +140,8 @@ function demo(){
 		["qtip", "Do you know that ?"],
 	];
 
-	//console.log("launch qtip-dict");
 	dico(document.body, qtip_dict, {match_class:"qtip-match"}, function onReady(){
-		//console.log("ready cb qtip");
 		$(".qtip-match").qtip();
-		//console.log($(".qtip-match").size());
 	});
 
 }
