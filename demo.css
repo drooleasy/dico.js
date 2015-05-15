@@ -1,0 +1,78 @@
+body{
+	position:relative;
+	font-family:sans-serif;
+	background-color:#ccc;
+}
+.mymatch{
+	color:#393;
+}
+
+.evil-match{
+	position:relative;
+	font-size:1.6em;
+}
+.evil-match sup{
+	position:absolute;
+	font-size:0.6em;
+}
+
+.restrain-match{ font-size:1.2em;color:#060; font-wight:bold; }
+.restrain-match sup{
+	position:static;
+	font-size:0.6em;
+	color:#660;
+}
+
+
+
+.dico-match{
+	cursor:help;
+}
+
+#presentation,
+#how-to {
+	width:50em;
+	margin:0 auto;
+	background-color:#fff;
+	color:#333;
+	padding:2em 4em;
+	border-radius:2em;
+	margin-bottom:2em;
+}
+h1{
+	text-align:center;
+	border-bottom:1px solid #333;
+}
+.button{
+	background-color:#333;
+	color:#CCC;
+	padding:4px;
+	border-radius:4px;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+#disable-dict:hover{
+	color:#c1002a;
+}
+
+
+.disabled,
+#disable-dict.disabled:hover,
+.disabled:hover{
+	background-color:#666 !important;
+	color:#999 !important;
+	cursor:default;
+}
+
+.button:hover{
+	background-color:#444;
+	color:#3C3;
+}
+
+.dsbl-match{
+	background-color:#FF0;
+	cursor:help;
+	padding:2px;
+	border-radius:4px;
+}

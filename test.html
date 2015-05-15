@@ -1,0 +1,132 @@
+<!doctype>
+<html>
+	<head>
+		<title>Demo for Dico.js</title>
+		<meta http-equiv="Content-Type" content="tet;html;charset=UTF-8" />
+		<link rel="stylesheet" href="demo.css" />
+		<link rel="stylesheet" href="http://cdn.jsdelivr.net/qtip2/2.2.1/basic/jquery.qtip.min.css" />
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script src="http://cdn.jsdelivr.net/qtip2/2.2.1/basic/jquery.qtip.min.js"></script>
+		<script src="https://code.jquery.com/color/jquery.color-2.1.2.min.js"></script>
+		<script src="dico.js"></script>
+		
+	</head>
+	<body>
+		<h1>Dico.js</h1>
+		<div id="presentation">
+	
+			<h2>What do you, mean Dico ?</h2>
+			
+			<p>
+				This library allow you to markup text node's words or phrases or RegExp associated with "definition" string. 
+			</p>
+			<p>
+				The tokens to be matched can be nested in any number of tag, but token broken across several tag will not work.
+			</p>
+			<p>
+				You can <a id="enable-dict" href="#" onclick="return enable_dict();" class="button">activate</a> or 
+				<a id="disable-dict" href="#" onclick="return disable_dict();" class="button disabled">desactivate</a> a dictionary, and use several dictionaries in the same page;
+			</p>
+			<p>
+				The parsing favorize the biggest match in case of multiple match recovering each other. : <br/>
+				"tip looses in multiple; match wins over at..."	
+			</p>
+			<p>
+				Matches can occur on full word or phrase, but also on regular exprssion.
+			</p>
+			<p id='custom'>
+				You can customize the element node generated for a match with a element name (span by default),
+				a class, a prefix and a suffix, disable automatic setting of the title attribute.
+			</p>
+
+			<p>
+				To go further, you can provides your custom element builder function
+			</p>
+			<p>
+				By default, some tags (script, style...) are note proceeded further,
+				but you can refine the list, or specify your own crieria.
+			</p>
+			<p>
+				You can choose from wich element(s) to start and restrain the parsing
+			</p>
+			<p id="restrain"> I repeat.<br/>
+				You can choose from wich element(s) to start and restrain the parsing.<br/> 
+				See ?
+			</p>
+			<p>
+				By default all Latin-1 word characters are supported, not just ASCII : çôöl.	
+			</p>
+			<p>
+				Parsing can be made case-sensitive or not.
+			</p>
+			<p>
+				It has no dependencies and should work even in the oldest browsers.
+			</p>
+			<p>
+				Still you can use it with your favorite libs, like jQuery and qTip;
+			</p>
+			<p>
+				The parsing process can be time consuming, especialy, with
+				large document and multiple lengthy dictionaries. So it have 
+				been made asynchronous in order not to freeze the UI, and you can 
+				specify a callback to perform operations on generated nodes after
+				parsing is done. This is  on a per call to parsing basis.
+			</p>
+			<p>	
+				This approach is mandatory to anything with dico generated content,
+				you CAN'T rely on onload, document ready event or $() callbacks.  
+			</p>
+		</div>
+		<div id="how-to">
+			<h2>So how do I ?...</h2>
+			<p>
+				After linking dico.js, you must build a dictionary.
+				This is just an array of 2-elements array : the key and the definition.
+				Keys can be strings or regular expressions (they must be global to match all occurences). 
+			</p>
+			<pre>
+var myDictionary = [
+	["word","a definition for 'word'"],
+	[/^foo-?bar-?/, "something not to mess with"],
+];
+			</pre>
+			<p>
+				Then you call the parsing function, giving it a root node, 
+				and a dictionary.
+			</p>
+			<pre>
+var myParsing = dico(document.body, myDictionary);
+			</pre>
+			<p>
+				And that's it!
+			</p>
+			<p>
+				By default, matches are converted to &lt;span&gt;s with
+				a class of 'dico-match' and a title attribute set to 
+				the corresponding definition. Also, an asterisk is append to
+				the matched token.
+			</p>
+			<p>
+				This all can be change through configuration (with impact
+				on subsequent parsings) :
+			</p>
+			<pre>
+dico.config.match_element = "strong"; // defaults to span
+dico.config.match_class = "my-own-private-match"; // defaults to dico-match
+dico.config.match_prefix = "["; // defaults to empty string
+dico.config.match_suffix = "]"; // defaults to "*"
+dico.config.match_set_title = false; // defaults to true
+			</pre>
+			<p>
+				The parsing function returns an object with an undo() method
+				that allows to restore the original text nodes without parsing markup:
+			</p>
+			<pre>
+var parsed = dico(target_node, dictionary);
+// ...
+parsed.undo();
+			</pre>
+		</div>
+		<script src="demo.js"></script>
+	</body>
+</html>
