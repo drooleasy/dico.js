@@ -1,8 +1,11 @@
 	// node is a text element
-	function parseText(node, dictionary, options){
+	function parseText(node, memo){
 		"use strict";
-		var text = node.nodeValue || "";
-		dictionary = dictionary || [];
+		
+		
+		var dictionary = memo.dictionary  || [], 
+			options = memo.options,
+			text = node.nodeValue || "";
 						
 		var textLC = options.match_case_sensitively ? text : text.toLowerCase();
 		var matchesObj = {

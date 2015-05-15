@@ -1,7 +1,6 @@
 ;var dico = (function(){
 	"use strict";
 
-
 		var defaults  =  {
 		
 		match_class : "dico-match",
@@ -30,69 +29,72 @@
 				
 	};
 	
-		function parseNode(node, dictionary, options, onReady){
+	function walkAsync(node, processNode,  memo,  done){
+	"use strict";
+	
+	memo = memo || {};
+	done = done || function(){};
+	done.pendingOps = done.pendingOps || 0;
+
+	if(processNode(node, memo)) {
+		var children = node.childNodes;
+		for (var i=0; i<children.length ; i++){
+			// increment pending ops  count
+			done.pendingOps++;		
+			// asynchronous recursion, for deeeeeeeeply nested documents		
+			setTimeout((function(child, processNode, memo, done){
+				return function(){ 
+					walkAsync(child, processNode, memo, done); 
+				};
+			})(children[i], processNode, memo, done), 0);
+		}
+	}
+
+	// fire done "events" if necessary
+	done.pendingOps--;
+	if(done.pendingOps===0){ 
+		done(memo);
+	}
+	
+}
+		// DEPS wamkAsync
+	// DEPS parseText
+	// DEPS default_is_parsable_callback
+	
+	function parse(node, dictionary, options, onReady){
 		"use strict";
 		
 		options = options || {};
 		onReady = onReady || function(){};
-		var opt;
 		
-		
-		for(opt in parseNode.config){
-			if(options[opt] === undefined){
-				options[opt] = parseNode.config[opt];
+		var memo = {
+				options:options,
+				dictionary:dictionary
+		};		
+
+		walkAsync(node, processNode, memo,  onReady);
+				
+		function supa(node, options){
+			return function(){
+				return default_is_parsable_callback(node, options);
 			}
 		}
-		onReady.pendingOps = onReady.pendingOps || 0;
-	
-		if(node.nodeType == 3){ // text node, we parse for dict tokens, no further recursion
-			parseText(node, dictionary, options);
-		}else if(node.nodeType == 1 && 
-				options.is_parsable_callback(node, options, function(){
-					return default_is_parsable_callback(node, options);
-					
-				})){ // elements node, look recursively for text nodes in children
-			var children = node.childNodes;
-			for (var i=0; i<children.length ; i++){
-				// asynchronous recursion, for deeeeeeeeply nested documents
-				onReady.pendingOps++;
-				setTimeout((function(target, dic, options){
-					return function(){ 
-						parseNode(target, dic, options, onReady); 
-					};
-				})(children[i], dictionary, options), 0);
+			
+		function processNode(node, memo){
+			// text node, we parse for dict tokens, no further recursion	
+			if(node.nodeType == 3){ 
+				parseText(node, memo);
+				return false;
+			// elements node, look recursively for text nodes in children
+			// if elements not blacklisted	
+			}else if(node.nodeType == 1){ 
+				return memo.options.is_parsable_callback(node, memo.options, supa);
 			}
+			// other types of nodes (comments...) : skip 'em
+			return false;
 		}
-		onReady.pendingOps--;
-		if(onReady.pendingOps===0){ 
-			onReady();
-		}
-		// other types of nodes (comments...) : skip 'em
 		
 		
-		var undo = function(){
-			var all = document.getElementsByTagName("*"),
-				i=0,
-				l=all.length,
-				cur,
-				original,
-				text_node;
-			for(;i<l;i++){
-				cur = all[i];
-	
-	
-				var pre = "data-" + options.name +"-"+ options.match_data +"-";
-				var origin = pre + options.match_data_original;
-	
-				original = cur && cur[origin];
-				if(original){
-					text_node = document.createTextNode(original);
-					// asynchronus to avoid concurrent iteration and modification of node list
-					// also ensures it wont be executed before parsing (asynchronously) ended
-					setTimeout(swap(cur, text_node), 0);
-				}
-			}
-		};
 		
 		return {
 			"undo" : undo
@@ -123,10 +125,13 @@
 		};
 	}
 		// node is a text element
-	function parseText(node, dictionary, options){
+	function parseText(node, memo){
 		"use strict";
-		var text = node.nodeValue || "";
-		dictionary = dictionary || [];
+		
+		
+		var dictionary = memo.dictionary  || [], 
+			options = memo.options,
+			text = node.nodeValue || "";
 						
 		var textLC = options.match_case_sensitively ? text : text.toLowerCase();
 		var matchesObj = {
@@ -249,10 +254,57 @@
 		}
 	}
 
-	
-	parseNode.config = defaults;
+	function undo(options){
+	"use strict";
+	var all = document.getElementsByTagName("*"),
+		i=0,
+		l=all.length,
+		cur,
+		original,
+		text_node;
+	for(;i<l;i++){
+		cur = all[i];
 
-	return parseNode;
+
+		var pre = "data-" + options.name +"-"+ options.match_data +"-";
+		var origin = pre + options.match_data_original;
+
+		original = cur && cur[origin];
+		if(original){
+			text_node = document.createTextNode(original);
+			// asynchronus to avoid concurrent iteration and modification of node list
+			// also ensures it wont be executed before parsing (asynchronously) ended
+			setTimeout(swap(cur, text_node), 0);
+		}
+	}
+};
+	
+	
+	function dico(node, dictionary, options, done){
+		options = options || {};
+		var opt;
+		for(opt in dico.config){
+			if(options[opt] === undefined){
+				options[opt] = dico.config[opt];
+			}
+		}
+	
+		parse(node, dictionary, options, done);
+
+		var undome = (function(options){
+			return function (){
+				undo(options);
+			};
+		})(options);
+		
+		return {
+			undo:undome,
+		};
+	};
+
+	dico.config = defaults;
+
+	return dico;
 
 })();
 
