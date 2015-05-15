@@ -7,6 +7,7 @@
 	<?php require_once("default_matches_callback.js") ?>
 	<?php require_once("default_is_parsable_callback.js") ?>
 	<?php require_once("swap.js") ?>
+	<?php require_once("buildMarkup.js") ?>
 	<?php require_once("parseText.js") ?>
 	<?php require_once("undo.js") ?>
 	

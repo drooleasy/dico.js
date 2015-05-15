@@ -175,7 +175,7 @@ var evil_opt = {
 var evil = dico(document.body, [
 	["this library", "this library"],
 	["markup", "markup"],
-	["dictionary", "dictionary"],
+	["dictionaries", "dictionaries"],
 	["matches", "matches"],
 ], evil_opt, function() {
 	$(".evil-match").css("position", "relative")
