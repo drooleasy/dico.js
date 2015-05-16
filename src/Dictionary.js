@@ -89,9 +89,13 @@ function Dictionary(dict){
 	
 	this.merge = function merge(other){
 		if(!(other instanceof Dictionary)) other = new Dictionary(other);
-		var key = 0;
-		for(key in other.keys()){
-			dictionaries[name]
+		var i=0,
+			keys = other.keys(),
+			l=keys.length,
+			key;
+		for(;i<l;i++ ){
+			key = keys[i];
+			this.add(key, other.definitionOf(key));
 		}
 	}
 }

@@ -89,9 +89,13 @@ function Dictionary(dict){
 	
 	this.merge = function merge(other){
 		if(!(other instanceof Dictionary)) other = new Dictionary(other);
-		var key = 0;
-		for(key in other.keys()){
-			dictionaries[name]
+		var i=0,
+			keys = other.keys(),
+			l=keys.length,
+			key;
+		for(;i<l;i++ ){
+			key = keys[i];
+			this.add(key, other.definitionOf(key));
 		}
 	}
 }
@@ -177,7 +181,6 @@ NodePath.prototype=new Array();
 		match_set_title : true,
 		match_case_sensitively : false,
 
-
 		is_parsable_callback : default_is_parsable_callback,
 		matches_callback : default_matches_callback,
 
@@ -188,7 +191,8 @@ NodePath.prototype=new Array();
 		match_data_token : "token",
 		match_data_definition : "definition",
 		match_data_original : "original",
-	
+		
+		matches_suffix : "matches",
 	
 		// /\w/ lacks support of non-ascii characters and "-"
 		// here's latin1, and we dont support "_"
@@ -328,10 +332,19 @@ function buildMarkup(node, matchesObj, dictionary, memo){
 				dict_def = dictionary[matchesObj[position][2]][1],
 				insert = options.matches_callback(match, dict_key, dict_def, options);
 			
-			var pre = "data-" + options.name +"-"+ options.match_data +"-";
+			var parseName = "data-" + options.name +"-"+ options.match_data,
+				pre = parseName +"-";
 			insert[pre + options.match_data_original] = match;
 			insert[pre + options.match_data_token] = dict_key;
 			insert[pre + options.match_data_definition] = dict_def;
+			
+			node.parentNode[parseName] = node.parentNode[parseName] || {};
+			node.parentNode[parseName][match]=dict_key;
+			
+			var matchesData = "data-" + options.match_data + "-"+ options.matches_suffix;
+			node.parentNode[matchesData] = node.parentNode[matchesData] || {};
+			node.parentNode[matchesData][options.name] = 1+(node.parentNode[matchesData][options.name] || 0);
+			
 			
 			node.parentNode.insertBefore(insert,node);	
 
@@ -498,32 +511,83 @@ name -> nodes
 	}
 	
 	function addDictionary(name, dict){
-		if(!dictionaries[name]) dictionaries[name] = [];
-		
+		if(!dictionaries[name]) dictionaries[name] = new Dictionary();
+		dictionaries[name].merge(dict);
+	}
+
+	function getDictionary(name){
+		return dictionaries[name] || null;
 	}
 
 
+	function is_node(node){
+		return (node && node.nodeType !== undefined);
+	}
 
-	function dico(node, dictionary, options, done){
+	function dico(/*node, dictionary, options, done*/){
+		var i=0,
+			arg,
+			node,
+			dictionary,
+			options,
+			done,
+			name;
+		for(;i<arguments.length;i++){
+			arg=arguments[i];
+			if(arg && arg.constructor && /^String/.test(arg.constructor.name)){
+				name = arg; 
+			}else if(arg && arg.constructor && (/^Array/.test(arg.constructor.name) || arg instanceof Dictionary)){
+				dictionary = arg;
+			}else if(arg && arg.constructor && /^Function/.test(arg.constructor.name)){
+				done = arg;
+			}else if(is_node(arg)){
+				node = arg;
+			}else{
+				options = arg;
+			}
+		}
+
+		
 		options = options || {};
+		if(name) options.name = name;
+		
+		if(!node) node = document.body;
+		
 		var opt;
 		for(opt in dico.config){
 			if(options[opt] === undefined){
 				options[opt] = dico.config[opt];
 			}
 		}
-	
-		parse(node, dictionary, options, done);
 
-		var undome = (function(options){
-			return function (){
-				undo(options);
+		if(dictionary){
+			addDictionary(options.name, dictionary);
+			parse(node, getDictionary(options.name).asArray(), options, done);
+			var undome = (function(options){
+				return function (){
+					undo(options);
+				};
+			})(options);
+			
+			return {
+				undo:undome,
 			};
-		})(options);
 		
-		return {
-			undo:undome,
-		};
+		}else{
+			var undoit = (function(options){
+				return function (){
+					undo(options);
+				};
+			})(options);
+			
+			return {
+				undo:undoit,
+			};
+			
+		}
+		
+		
+		
 	};
 
 	dico.config = defaults;

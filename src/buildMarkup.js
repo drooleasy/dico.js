@@ -34,10 +34,19 @@ function buildMarkup(node, matchesObj, dictionary, memo){
 				dict_def = dictionary[matchesObj[position][2]][1],
 				insert = options.matches_callback(match, dict_key, dict_def, options);
 			
-			var pre = "data-" + options.name +"-"+ options.match_data +"-";
+			var parseName = "data-" + options.name +"-"+ options.match_data,
+				pre = parseName +"-";
 			insert[pre + options.match_data_original] = match;
 			insert[pre + options.match_data_token] = dict_key;
 			insert[pre + options.match_data_definition] = dict_def;
+			
+			node.parentNode[parseName] = node.parentNode[parseName] || {};
+			node.parentNode[parseName][match]=dict_key;
+			
+			var matchesData = "data-" + options.match_data + "-"+ options.matches_suffix;
+			node.parentNode[matchesData] = node.parentNode[matchesData] || {};
+			node.parentNode[matchesData][options.name] = 1+(node.parentNode[matchesData][options.name] || 0);
+			
 			
 			node.parentNode.insertBefore(insert,node);	
 

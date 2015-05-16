@@ -160,7 +160,7 @@ var evil_opt = {
 
 };
 
-var evil = dico(document.body, [
+var evil = dico("evil", document.body, [
 	["this library", "this library"],
 	["markup", "markup"],
 	["dictionaries", "dictionaries"],
@@ -178,4 +178,5 @@ var evil = dico(document.body, [
 		.animate({"font-size":"1.6em", "opacity":1}, 200)
 		//.delay(60000)
 		.animate({"font-size":"0em", "opacity":0}, 400 );
+	dico("evil").undo();
 });

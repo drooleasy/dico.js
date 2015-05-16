@@ -7,7 +7,6 @@
 		match_set_title : true,
 		match_case_sensitively : false,
 
-
 		is_parsable_callback : default_is_parsable_callback,
 		matches_callback : default_matches_callback,
 
@@ -18,7 +17,8 @@
 		match_data_token : "token",
 		match_data_definition : "definition",
 		match_data_original : "original",
-	
+		
+		matches_suffix : "matches",
 	
 		// /\w/ lacks support of non-ascii characters and "-"
 		// here's latin1, and we dont support "_"
