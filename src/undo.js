@@ -21,6 +21,10 @@ function undo(options){
 			// asynchronus to avoid concurrent iteration and modification of node list
 			// also ensures it wont be executed before parsing (asynchronously) ended
 			setTimeout(swap(cur, text_node), 0);
+			console.log(options.name);
+			var opt_key =  "data-"+ options.match_data +"-" + options.matches_suffix;
+			var matches = cur.parentNode[opt_key][options.name];
+			if(matches>0) cur.parentNode[opt_key][options.name] = -matches;
 		}
 	}
 };

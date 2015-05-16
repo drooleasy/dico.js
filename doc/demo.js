@@ -89,7 +89,7 @@ function demo(){
 		match_suffix:"::", // *
 		match_case_sensitively:true, // false
 		match_set_title:true, // true
-		smatch_character_regexp : /\w/,
+		match_character_regexp : /\w/,
 		match_only_first : false,
 		name : "custom",
 	};
