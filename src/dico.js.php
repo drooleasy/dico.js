@@ -1,3 +1,8 @@
+<?php require_once("Dictionary.js") ?>
+<?php require_once("NodePath.js") ?>
+
+
+
 ;var dico = (function(){
 	"use strict";
 
@@ -11,7 +16,46 @@
 	<?php require_once("parseText.js") ?>
 	<?php require_once("undo.js") ?>
 	
+
+/*
+
+needs dict builder/manager
+
+select : node?, name?
+
+
+node is no
+
+parsing : dicts, opt
+-> add,remove dict
+-> change opt
+-> undo redo
+
+on parsing change :
+	undo node,name
+	add new dict/opt
+	reparse
+
+
+node_path -> node?
+name -> nodes
 	
+*/
+
+
+
+
+	var dictionaries = {
+		"dico" : new Dictionary(),	
+	}
+	
+	function addDictionary(name, dict){
+		if(!dictionaries[name]) dictionaries[name] = [];
+		
+	}
+
+
+
 	function dico(node, dictionary, options, done){
 		options = options || {};
 		var opt;

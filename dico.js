@@ -1,3 +1,170 @@
+function Dictionary(dict){
+	"use strict";
+	
+	var i=0,
+		key=null,
+		normal_keys = {},
+		regexp_keys = {};
+	dict = dict || [];
+	if(dict.length){
+		for(;i<dict.length;i++){
+			if(dict[i].length && dict[i].length>1){
+				add.apply(this, dict[i]);
+			}
+		}
+	}
+	
+	function testRegExp(s){
+		// note empty regexp is a comment and so does not exists)
+		return /^\/.*[^\\]\/[img]{0,3}$/.test(s)
+	}
+	
+	function parseRegExp(s){
+		var match = /^\/(.*[^\\])\/([img]{0,3})$/.exec(s);
+		if(!match) throw new SyntaxError("Not regexp string: "+s);
+		return new RegExp(match[1], match[2]);
+	}
+	
+	this.keys = function keys(){
+		var res = [],
+			k;
+		for(k in normal_keys) res.push(k);
+		for(k in regexp_keys) res.push(parseRegExp(k));
+		return res;
+	}
+	
+	this.definitionOf = function definitionOf(key){
+		var res = null;
+		if(key instanceof RegExp){ 
+			res = regexp_keys[""+key];
+		}else{
+			res = normal_keys[key];
+			if(res===undefined){
+				if(testRegExp(key)){
+					res = regexp_keys[""+key];
+				}
+			}
+		}
+		if(res===undefined) res = null;
+		return res;
+	}
+	
+	this.asArray = function(){
+		var res=[],
+			key;
+		for(key in normal_keys){
+			res.push([key, normal_keys[key]]);
+		}
+		for(key in regexp_keys){
+			res.push([parseRegExp(key), regexp_keys[key]]);
+		}
+		return res;
+	}
+	function add(/* key, key2, ..., def */){
+		var i=0,
+			l=arguments.length-1,
+			def = arguments[l],
+			key;
+		if(l>0){
+			for(;i<l;i++){
+				key = arguments[i];
+				if(key instanceof RegExp) regexp_keys[""+key] = def;
+				else normal_keys[""+key] = def;
+			}
+		}
+	}
+	this.add = add; 
+
+	this.remove = function remove(key, def){
+		if(key instanceof RegExp){ 
+			delete regexp_keys[""+key];
+		}else{ 
+			if(normal_keys[""+key]){
+				delete normal_keys[""+key];
+			}else if(testRegExp(key)){
+				delete regexp_keys[""+key];
+			}
+		}
+	}
+	
+	this.merge = function merge(other){
+		if(!(other instanceof Dictionary)) other = new Dictionary(other);
+		var key = 0;
+		for(key in other.keys()){
+			dictionaries[name]
+		}
+	}
+}
+
+/*
+
+
+var arr = [
+    [/abc/,"hh","a","b", "une regexp"],
+    ["foo","bar"],
+     ["baz","ooka"],
+  ];
+d = new Dictionary(arr);
+d.keys()
+ d.definitionOf(/fabc/)
+  d.remove("hh")
+  d.asArray();
+
+*/
+ 
+ 
+
+function NodePath(node){
+	
+	var cur = node;
+	if(cur){
+		this.unshift(cur);
+		while(cur.parentNode){
+			cur = cur.parentNode;
+			this.unshift(cur);
+		}
+	}
+	
+	this.common = function common(other){
+		if(!(other instanceof NodePath)){
+			other = new NodePath(other);
+		}
+		var res = [],
+			l_min = Math.min(this.length, other.length),
+			i=0;
+		while(i<l_min){
+			if(this[i] === other[i]){
+				res.push(this[i]);
+			}else{
+				break;
+			}
+			i++;
+		}
+		if(res.length) return new NodePath(res[res.length-1]);
+		return new NodePath();
+	}
+	
+	this.root = function root(){
+		return this[0];
+	}
+	
+	this.leaf = function root(){
+		return this[this.length-1];
+	}
+	this.isSubPathOf = function isSubPathOf(other){
+		var common = this.common(other);
+		return common.length==other.length;
+	}
+	
+	this.isPrefixOf = function isPrefixOf(other){
+		var common = this.common(other);
+		return common.length==this.length;
+	}
+}
+NodePath.prototype=new Array();
+
+
+
 ;var dico = (function(){
 	"use strict";
 
@@ -120,6 +287,7 @@
 	
 		function swap(old, neo){
 		"use strict";
+
 		return function(){
 			old.parentNode && old.parentNode.replaceChild(neo,old);
 		};
@@ -269,7 +437,9 @@ function parseText(node, memo){
 	buildMarkup(node, matchesObj, dictionary, memo);
 }
 
-	function undo(options){
+	// DEPS on swap
+
+function undo(options){
 	"use strict";
 	var all = document.getElementsByTagName("*"),
 		i=0,
@@ -294,7 +464,46 @@ function parseText(node, memo){
 	}
 };
 	
+
+/*
+
+needs dict builder/manager
+
+select : node?, name?
+
+
+node is no
+
+parsing : dicts, opt
+-> add,remove dict
+-> change opt
+-> undo redo
+
+on parsing change :
+	undo node,name
+	add new dict/opt
+	reparse
+
+
+node_path -> node?
+name -> nodes
 	
+*/
+
+
+
+
+	var dictionaries = {
+		"dico" : new Dictionary(),	
+	}
+	
+	function addDictionary(name, dict){
+		if(!dictionaries[name]) dictionaries[name] = [];
+		
+	}
+
+
+
 	function dico(node, dictionary, options, done){
 		options = options || {};
 		var opt;
