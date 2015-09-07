@@ -7,7 +7,7 @@ the surrounding content.
 To build Dico.js from the sources you will need to have PHP installed
 and enable execution of the build.sh script :
 
->	$ cmod +x build
+>	$ chmod +x build
 
 Then simply run the script from project's root :
 
